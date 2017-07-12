@@ -1,23 +1,25 @@
 package routers
 
 import (
-	"sns/controllers"
+	"sns/controllers/web"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 )
 
 func init() {
-	beego.Router("/", &controllers.MainController{})
-	beego.NewNamespace("/index", beego.NSCond(func(ctx *context.Context) bool {
-		//		enable domain check
-		//		if ctx.Input.Domain() == "api.beego.me" {
-		//			return true
-		//		}
-		return true
-	}),
-		beego.NSRouter("/plugin-list", &MainController{}, "get:Get"),
-		beego.NSRouter("/epuser/plugin-list", &MainController{}, "get:Get")
-		beego.NSRouter("/epuser/login", &MainController{}, "get:Get")
+	beego.Router("/", &web.MainController{})
+	beego.NewNamespace("/index",
+		beego.NSCond(func(ctx *context.Context) bool {
+			//		enable domain check
+			//		if ctx.Input.Domain() == "api.beego.me" {
+			//			return true
+			//		}
+			return true
+		}),
+		beego.NSRouter("/plugin-list", &web.MainController{}, "get:Get"),
+		beego.NSRouter("/epuser/plugin-list", &web.MainController{}, "get:Get"),
+		beego.NSRouter("/epuser/login", &web.MainController{}, "get:Get"),
 	)
 	beego.NewNamespace("/dev", beego.NSCond(func(ctx *context.Context) bool {
 		//		enable domain check
@@ -26,7 +28,7 @@ func init() {
 		//		}
 		return true
 	}),
-		beego.NSRouter("/1.0/reference", &MainController{}, "get:Get")
+		beego.NSRouter("/1.0/reference", &web.MainController{}, "get:Get"),
 	)
 	beego.NewNamespace("/console", beego.NSCond(func(ctx *context.Context) bool {
 		//		enable domain check
@@ -35,6 +37,6 @@ func init() {
 		//		}
 		return true
 	}),
-		beego.NSRouter("/1.0/reference", &MainController{}, "get:Get")
+		beego.NSRouter("/1.0/reference", &web.MainController{}, "get:Get"),
 	)
 }

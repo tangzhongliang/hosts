@@ -2,7 +2,7 @@ package sns
 
 import (
 	"sns/common/snsstruct"
-	"sns/models/beans"
+	"sns/
 )
 
 func SendMessageToPluginByPost(url, json string) bool {
@@ -13,7 +13,7 @@ func DispatchMessageToEP(msg snsstruct.EPMessage, token string) {
 
 }
 
-func DispatchMessageToPlugin(msg snsstruct.EPMessage, epUser beans.SNSEPUser) {
+func DispatchMessageToPlugin(msg snsstruct.EPMessage, epUser SNSEPUser) {
 
 }
 

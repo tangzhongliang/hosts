@@ -1,7 +1,7 @@
 package snsepmessagecenter
 
 import (
-	"sns/models/beans"
+	"sns/
 
 	"github.com/astaxie/beego"
 )
@@ -15,7 +15,7 @@ type SNSEPAccounAuther interface {
 	GetAuthUrl()
 	SnsCheckAuthResponse(controller *beego.Controller) bool
 
-	GetSnsByEmail(email) []beans.SNSEPUser
+	GetSnsByEmail(email) []SNSEPUser
 	GetSNSToken(string)
 	//send file only
 	//	SendFileByChannel(token, message, url, channelId string)

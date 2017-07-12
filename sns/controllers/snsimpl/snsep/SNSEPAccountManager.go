@@ -4,7 +4,7 @@ import (
 	"sns/ "
 )
 
-func GetSnsByEmail(email) []beans.SNSEPUser {
+func GetSnsByEmail(email) []SNSEPUser {
 
 }
 
