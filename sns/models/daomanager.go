@@ -7,11 +7,13 @@ import (
 
 	"sns/util/snserror"
 
-	"github.com/jinzhu/gorm"
 	"sns/util/snslog"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+
 	"sync"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type User struct {
@@ -71,12 +73,13 @@ func init() {
 	var err error
 	DB, err = gorm.Open("mysql", "root:root@/sns?charset=utf8&parseTime=True&loc=Local")
 	snserror.LogAndPanic(err)
-	// DB.LogMode(true)
+	DB.LogMode(false)
 	var tables = []interface{}{&SnsEpAccount{},
 		&SnsEpAccountEmail{},
 		&SnsPluginAccount{},
 		&SnsPlugin{},
-		&SnsPluginConfig{}}
+		&SnsPluginConfig{},
+		&SnsPluginEpAccount{}}
 	for _, value := range tables {
 		DB.DropTable(value)
 		if !DB.HasTable(value) {

@@ -1,4 +1,7 @@
 package snsstruct
 
-type SNSEPMessage struct {
+type SnsEpMessage struct {
+}
+
+type SnsEpMessageResponse struct {
 }

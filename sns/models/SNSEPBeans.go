@@ -4,7 +4,7 @@ package models
 // related SNSEPAccountEmail one-one
 type SnsEpAccount struct {
 	BaseModel
-	Name         string `gorm:"not null"`
+	Name         string `gorm:"not null;index"`
 	Email        string
 	AccountId    string `gorm:"primary_key"` //create id when account is team
 	EPType       string `gorm:"primary_key"`

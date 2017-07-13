@@ -21,3 +21,5 @@ type SnsPluginConfig struct {
 	Id          int64
 	AccountName string `xorm:"unique notnull 'account_name'"`
 }
+type SnsPluginEpAccount struct {
+}
