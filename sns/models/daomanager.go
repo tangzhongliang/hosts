@@ -73,7 +73,7 @@ func init() {
 	var err error
 	DB, err = gorm.Open("mysql", "root:root@/sns?charset=utf8&parseTime=True&loc=Local")
 	snserror.LogAndPanic(err)
-	DB.LogMode(false)
+	DB.LogMode(true)
 	var tables = []interface{}{&SnsEpAccount{},
 		&SnsEpAccountEmail{},
 		&SnsPluginAccount{},

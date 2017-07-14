@@ -13,13 +13,14 @@ func RegisterPlugin(token, pluginConfig string) {
 
 }
 
-func FindPluginByToken(token string) (models.SnsPlugin, error) {
+func FindPluginByToken(token string) (plugin models.SnsPlugin, err error) {
 	var accounts []models.SnsPlugin
-	err := models.Query(&accounts, &models.SnsPlugin{PluginToken: token})
+	err = models.Query(&accounts, &models.SnsPlugin{PluginToken: token})
 	if snserror.LogAndPanic(err) {
-		return error
+		return
 	}
-	return accounts[0], nil
+	plugin = accounts[0]
+	return
 }
 
 func ParseFromPluginMessage(str string) (msg snsstruct.PluginToEpMessage, err error) {
@@ -33,7 +34,7 @@ func ParseFromPluginMessage(str string) (msg snsstruct.PluginToEpMessage, err er
 	}
 
 	//	-----------------------------unpack Userid:eptype_userid
-	msg.TargetUsers = [len(msg.TargetUserIds)]models.SnsEpAccount{}
+	msg.TargetUsers = make([]models.SnsEpAccount, len(msg.TargetUserIds))
 	for index, userId := range msg.TargetUserIds {
 		splits := strings.SplitN(userId, "_", 2)
 		if len(splits) != 2 {
@@ -45,6 +46,7 @@ func ParseFromPluginMessage(str string) (msg snsstruct.PluginToEpMessage, err er
 		msg.TargetUsers[index].EPType = splits[0]
 		msg.TargetUsers[index].AccountId = splits[1]
 	}
+	return
 }
 
 func ParseToPluginMessage(str string) (msg snsstruct.EpToPluginMessage, err error) {
@@ -64,6 +66,6 @@ func ParseToPluginMessage(str string) (msg snsstruct.EpToPluginMessage, err erro
 	msg.Message.SnsEpResponse.CallbackId = splits[1]
 
 	//	----------------------------pack user to userid
-	msg.UserId = msg.User.EpType + "_" + msg.UserId
+	msg.UserId = msg.User.EPType + "_" + msg.UserId
 	return
 }

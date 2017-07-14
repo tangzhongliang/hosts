@@ -30,7 +30,8 @@ type SnsPluginConfig struct {
 	AccountName string
 }
 type SnsPluginEpAccount struct {
-	BaseModelWithId
-	EpAccountId string `gorm:"unique_index:idx_epaccount_id_plugin_id"`
-	PluginId    string `gorm:"unique_index:idx_epaccount_id_plugin_id"`
+	BaseModel
+	EpAccountId   string `gorm:"unique_index:idx_epaccount_id_type_plugin_id"`
+	EpAccountType string `gorm:"unique_index:idx_epaccount_id_type_plugin_id"`
+	PluginId      string `gorm:"unique_index:idx_epaccount_id_type_plugin_id"`
 }

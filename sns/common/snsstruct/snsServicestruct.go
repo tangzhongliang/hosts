@@ -40,38 +40,41 @@ type SelectedOption4Btn struct {
 	Value string `json:"value"`
 }
 
+type PluginToEpMessageData struct {
+	Text        string
+	Link        string
+	IsToAll     bool
+	Attachments []*Attachment
+}
+type PluginToEpMessageEmail struct {
+	TargetUserEmail []string
+	Platforms       []string
+}
 type PluginToEpMessage struct {
 	TargetUserIds []string
 	TargetUsers   []models.SnsEpAccount
-	TargetEmails  struct {
-		TargetUserEmail []string
-		Platforms       []string
-	}
-	PluginId string
-	Message  struct {
-		Text        string
-		Link        string
-		IsToAll     bool
-		Attachments []*Attachment
-	}
+	TargetEmails  PluginToEpMessageEmail
+	PluginId      string
+	Message       PluginToEpMessageData
+}
+type EpToPluginMessageData struct {
+	ChannelId     string
+	Text          string
+	MessageTs     string
+	MessageType   string
+	File          string
+	SnsEpResponse SnsEpResponse
 }
 type EpToPluginMessage struct {
 	UserId   string
 	User     models.SnsEpAccount `json:"-"`
 	PluginId string
-	Message  struct {
-		ChannelId     string
-		Text          string
-		MessageTs     string
-		MessageType   string
-		File          string
-		SnsEpResponse SnsEpResponse
-	}
+	Message  EpToPluginMessageData
 }
 type ServiceMessageResponse struct {
-	Ok         bool     `json:"ok"`
-	ErrCode    int      `json:"err_code"`
-	ErrMessage []string `json:"err_message"`
+	Ok         bool   `json:"ok"`
+	ErrCode    int    `json:"err_code"`
+	ErrMessage string `json:"err_message"`
 	Collect    struct {
 		context                string
 		EpAccountAffectedCount int

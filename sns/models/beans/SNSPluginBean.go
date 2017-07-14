@@ -8,7 +8,7 @@ type SnsPluginAccount struct {
 	Password      string `xorm:"notnull 'password'"`
 }
 type SnsPlugin struct {
-	Id               int64
+	PluginId         string
 	AccountName      string `xorm:"unique notnull 'account_name'"`
 	PluginName       string `xorm:"notnull 'plugin_name'"`
 	PluginSecret     string `xorm:"notnull 'plugin_secret'"`
@@ -22,4 +22,5 @@ type SnsPluginConfig struct {
 	AccountName string `xorm:"unique notnull 'account_name'"`
 }
 type SnsPluginEpAccount struct {
+	PluginId string
 }

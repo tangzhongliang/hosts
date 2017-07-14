@@ -6,6 +6,7 @@ import (
 	"sns/controllers/snsplugin"
 	"sns/models"
 	"sns/util/snserror"
+	"sns/util/snslog"
 )
 
 func SendMessageToPluginByPost(url, json string) bool {
@@ -13,7 +14,7 @@ func SendMessageToPluginByPost(url, json string) bool {
 }
 
 func SendMessageToEp(accounts []models.SnsEpAccount) bool {
-
+	snslog.If("SendMessageToEp/ send to %+v", accounts)
 	return true
 }
 
@@ -49,6 +50,7 @@ func DispatchMessageToEP(msg snsstruct.PluginToEpMessage, token string) (ret sns
 		accounts = snsep.GetSnsEpByPluginId(msg.PluginId)
 	}
 	SendMessageToEp(accounts)
+	return CreateServiceMessageResponse(1000, "")
 }
 
 func DispatchMessageToPlugin(msg snsstruct.EPMessage, epUser SNSEPUser) {
@@ -59,9 +61,17 @@ func ParsePluginMessage(json string) snsstruct.EPMessage {
 
 }
 func CreateServiceMessageResponse(code int, errMsg string) snsstruct.ServiceMessageResponse {
-	return snsstruct.ServiceMessageResponse{
-		Ok:         false,
-		ErrMessage: errMsg,
-		ErrCode:    code,
+	if code != 1000 {
+		return snsstruct.ServiceMessageResponse{
+			Ok:         true,
+			ErrMessage: errMsg,
+			ErrCode:    code,
+		}
+	} else {
+		return snsstruct.ServiceMessageResponse{
+			Ok:         false,
+			ErrMessage: errMsg,
+			ErrCode:    code,
+		}
 	}
 }
