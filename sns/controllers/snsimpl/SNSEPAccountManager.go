@@ -1,4 +1,4 @@
-package snsplugin
+package snsimpl
 
 import (
 	"sns/models"

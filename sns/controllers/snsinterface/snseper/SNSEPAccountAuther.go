@@ -1,9 +1,10 @@
-package snsepmessagecenter
+package snseper
 
 import (
-	"sns/
+	// "sns/models"
 
 	"github.com/astaxie/beego"
+	"sns/common/snsstruct"
 )
 
 type SNSEPAccounAuther interface {
@@ -15,8 +16,9 @@ type SNSEPAccounAuther interface {
 	GetAuthUrl()
 	SnsCheckAuthResponse(controller *beego.Controller) bool
 
-	GetSnsByEmail(email) []SNSEPUser
-	GetSNSToken(string)
+	ParseMessageFromWebhook(controller *beego.Controller) snsstruct.EpToPluginMessage
+	ParseMessageFromJson(postJson string) snsstruct.EpToPluginMessage
+
 	//send file only
 	//	SendFileByChannel(token, message, url, channelId string)
 	//	SendFileByUser(token, message, url, userId string)

@@ -1,9 +1,12 @@
 package snscommon
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"sns/common/snsstruct"
 	"sns/controllers/snsep"
 	// "sns/controllers/snsplugin"
+	"bytes"
 	"net/http"
 	"sns/models"
 	"sns/util/snserror"
@@ -23,21 +26,27 @@ func GetConversationPlugin(account models.SnsEpAccount) (plugin models.SnsPlugin
 	return
 }
 
-func SetConversationPlugin(account models.SnsEpAccount, plugin models.SnsPlugin) (plugin models.SnsPlugin, ok bool) {
+func SetConversationPlugin(account models.SnsEpAccount, plugin models.SnsPlugin) (ok bool) {
 	ConversationSateMapLock.Lock()
 	defer ConversationSateMapLock.Unlock()
 	ConversationSateMap[models.SnsEpAccount{AccountId: account.AccountId, AccountType: account.AccountType}] = plugin
 	return
 }
 
-func SendMessageToPluginByPost(url, json string) (err error) {
+func SendMessageToPluginByPost(url string, msg snsstruct.EpToPluginMessage) (err error) {
 	var req *http.Request
 	var res *http.Response
-	req, err = http.NewRequest("POST", url, []byte(json))
+	var msgBytes []byte
+	msgBytes, err = json.Marshal(msg)
+	snserror.LogAndPanic(err)
+	req, err = http.NewRequest("POST", url, bytes.NewReader(msgBytes))
 	req.Header.Add("Content-Type", "application/json")
 	res, err = http.DefaultClient.Do(req)
 	if err != nil {
 		snserror.LogAndPanic(err)
+	} else {
+		msgBytes, err = ioutil.ReadAll(res.Body)
+		snslog.If("SendMessageToPluginByPost result:%s", string(msgBytes))
 	}
 	return
 }

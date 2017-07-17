@@ -4,7 +4,7 @@ import (
 	// "fmt"
 	"sns/models"
 	"sns/util/snserror"
-	"strings"
+	// "strings"
 )
 
 func GetSnsEpByEmail(emails []string, types []string) (epAccounts []models.SnsEpAccount) {

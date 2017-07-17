@@ -9,11 +9,12 @@ type RegisterStructMaps map[string]reflect.Type
 
 //根据name初始化结构
 //在这里根据结构的成员注解进行DI注入，这里没有实现，只是简单都初始化
-func (rsm RegisterStructMaps) New(name string) (c interface{}, err error) {
+func (rsm RegisterStructMaps) New(name string) (c interface{}) {
 	if v, ok := rsm[name]; ok {
 		c = reflect.New(v).Interface()
 	} else {
-		err = snslog.Errorf("not found %s struct", name)
+		err := snslog.Errorf("not found %s struct", name)
+		panic(err)
 	}
 	return
 }
@@ -38,8 +39,8 @@ func Test2() {
 	//注册test
 	rsm.Register("test", &Test{})
 	//获取新的test的interface
-	test11, _ := rsm.New("test")
-	test22, _ := rsm.New("test")
+	test11 := rsm.New("test")
+	test22 := rsm.New("test")
 	//因为 test11 和 test22都是interface{},必须转换为*Test
 	test1 := test11.(*Test)
 	test2 := test22.(*Test)

@@ -2,7 +2,7 @@ package snsglobal
 
 import (
 	"sns/common/snsfactory"
-	"sns/models"
+	// "sns/models"
 	//	"sns/util/snserror"
 )
 
