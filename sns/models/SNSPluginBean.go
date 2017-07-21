@@ -1,9 +1,5 @@
 package models
 
-import (
-// "github.com/jinzhu/gorm"
-)
-
 type SnsPluginAccount struct {
 	BaseModel
 	Name               string `gorm:"primary_key"`

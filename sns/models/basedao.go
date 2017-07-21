@@ -25,6 +25,14 @@ func InsertOrUpdate(v interface{}) (err error) {
 	}
 	return
 }
+func Insert(v interface{}) (err error) {
+	err = GetDB().Create(v).Error
+	return
+}
+func Update(v interface{}) (err error) {
+	err = GetDB().Model(v).Where(GetPrimaryKey(v)).Update(v).Error
+	return
+}
 func All(v interface{}) (err error) {
 	err = GetDB().Find(v).Error
 	return

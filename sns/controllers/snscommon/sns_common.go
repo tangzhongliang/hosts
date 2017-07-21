@@ -51,25 +51,30 @@ func SendMessageToPluginByPost(url string, msg snsstruct.EpToPluginMessage) (err
 	return
 }
 
-func SendMessageToEp(accounts []models.SnsEpAccount) bool {
+func SendMessageToEp(accounts []models.SnsEpAccount) (sendMessageId string) {
 	snslog.If("SendMessageToEp/ send to %d;%+v", len(accounts), accounts)
-	return true
+	res := ExecUntilSuccess(func() (key interface{}, ok bool) {
+		key = CreateRandomString(20)
+		err := models.Insert(&models.PluginSendMessageState{SendMessageId: key.(string)})
+		ok = err == nil
+		return
+	})
+	sendMessageId = res.(string)
+	return
 }
 
 func DispatchMessageToEP(msg snsstruct.PluginToEpMessage, token string) (ret snsstruct.ServiceMessageResponse) {
-	// -------------------------check Plugin id
+	// -------------------------check token
 	var plugin models.SnsPlugin
-	err := models.QueryByKey(&plugin, &models.SnsPlugin{PluginId: msg.PluginId})
-	if err != nil {
-		ret = CreateServiceMessageResponse(1001, "plugin id is invalid")
-		return
-	}
-
-	//	--------------------------check token
-	if plugin.PluginToken != token {
+	// err := models.QueryByKey(&plugin, &models.SnsPlugin{PluginId: msg.PluginId})
+	err := models.Query(&plugin, &models.SnsPlugin{PluginToken: token})
+	if err != nil || len(token) == 0 {
+		// ret = CreateServiceMessageResponse(1001, "plugin id is invalid")
 		ret = CreateServiceMessageResponse(1002, "token is invalid")
 		return
 	}
+	//	-------------------------reset Plugin id
+	msg.PluginId = plugin.PluginId
 
 	//	---------------------------check user null
 	if !msg.Message.IsToAll && len(msg.TargetEmails.TargetUserEmail) == 0 && len(msg.TargetUsers) == 0 {
@@ -105,17 +110,16 @@ func DispatchMessageToPlugin(msg snsstruct.EpToPluginMessage) {
 }
 
 func CreateServiceMessageResponse(code int, errMsg string) snsstruct.ServiceMessageResponse {
+
 	if code == 1000 {
 		return snsstruct.ServiceMessageResponse{
-			Ok:         true,
-			ErrMessage: errMsg,
-			ErrCode:    code,
+			Ok:        true,
+			ErrDefine: snsstruct.ErrDefine{code, errMsg},
 		}
 	} else {
 		return snsstruct.ServiceMessageResponse{
-			Ok:         false,
-			ErrMessage: errMsg,
-			ErrCode:    code,
+			Ok:        false,
+			ErrDefine: snsstruct.ErrDefine{code, errMsg},
 		}
 	}
 }

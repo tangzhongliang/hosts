@@ -9,7 +9,7 @@ import (
 
 func init() {
 	beego.Router("/", &web.MainController{})
-	beego.NewNamespace("/index",
+	nsWebhook := beego.NewNamespace("/webhook",
 		beego.NSCond(func(ctx *context.Context) bool {
 			//		enable domain check
 			//		if ctx.Input.Domain() == "api.beego.me" {
@@ -33,22 +33,24 @@ func init() {
 		beego.NSRouter("/ep/notify/ep_office", &web.SnsEpController{}, "post:Notify"),
 	)
 
-	beego.NewNamespace("/dev", beego.NSCond(func(ctx *context.Context) bool {
+	nsPage := beego.NewNamespace("/pages", beego.NSCond(func(ctx *context.Context) bool {
 		//		enable domain check
 		//		if ctx.Input.Domain() == "api.beego.me" {
 		//			return true
 		//		}
 		return true
 	}),
-		beego.NSRouter("/1.0/reference", &web.MainController{}, "get:Get"),
+		beego.NSRouter("/user/bindemail", &web.PageController{}, "get:UserBindEmail"),
 	)
-	beego.NewNamespace("/console", beego.NSCond(func(ctx *context.Context) bool {
+	nsApi := beego.NewNamespace("/api", beego.NSCond(func(ctx *context.Context) bool {
 		//		enable domain check
 		//		if ctx.Input.Domain() == "api.beego.me" {
 		//			return true
 		//		}
 		return true
 	}),
-		beego.NSRouter("/1.0/reference", &web.MainController{}, "get:Get"),
+		beego.NSRouter("/plugin/get_token", &web.SnsPluginController{}, "get:RequestPluginToken"),
+		beego.NSRouter("/ep/url/check/get", &web.SnsEpController{}, "post:GetEpCheckUrl"),
 	)
+	beego.AddNamespace(nsWebhook, nsPage, nsApi)
 }

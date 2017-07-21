@@ -1,10 +1,15 @@
 package web
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
+	"io/ioutil"
 	"sns/common/snsglobal"
+	"sns/common/snsstruct"
 	"sns/controllers/snscommon"
+	"sns/controllers/snsep"
 	"sns/controllers/snsinterface/snseper"
+	// "sns/util/snslog"
 	"strings"
 )
 
@@ -35,4 +40,21 @@ func (this *SnsEpController) Notify() {
 	snsEpSender := snsglobal.SBeanFactory.New(snstype).(snseper.SNSEPAccounAuther)
 	epToPluginMessage := snsEpSender.ParseMessageFromWebhook(&this.Controller)
 	snscommon.DispatchMessageToPlugin(epToPluginMessage)
+}
+
+func (this *SnsEpController) GetEpCheckUrl() {
+	body, _ := ioutil.ReadAll(this.Ctx.Request.Body)
+	ret := make(map[string]interface{})
+	var data snsstruct.SnsEpEmailBindRequest
+	err := json.Unmarshal(body, &data)
+
+	if err != nil {
+		ret["ok"] = false
+	} else {
+		ret["ok"] = true
+		ret["url"] = snsep.GetEpCheckUrl(data)
+	}
+
+	this.Data["json"] = ret
+	this.ServeJSON()
 }

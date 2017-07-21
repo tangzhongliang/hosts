@@ -3,7 +3,9 @@ package snsplugin
 import (
 	"encoding/json"
 	"errors"
+	"sns/common/snsglobal"
 	"sns/common/snsstruct"
+	"sns/controllers/snscommon"
 	"sns/models"
 	"sns/util/snserror"
 	"strings"
@@ -67,5 +69,31 @@ func ParseToPluginMessage(str string) (msg snsstruct.EpToPluginMessage, err erro
 
 	//	----------------------------pack user to userid
 	msg.UserId = msg.User.EPType + "_" + msg.UserId
+	return
+}
+
+// create a new token for plugin
+// save new token into db
+// return response content
+func RequestPluginToken(plugin models.SnsPlugin) (res snsstruct.PluginTokenResponse) {
+	var existPlugin models.SnsPlugin
+	for true {
+		err := models.Query(&existPlugin, &models.SnsPlugin{PluginId: plugin.PluginId, PluginSecret: plugin.PluginSecret})
+		if err != nil {
+			res = snsstruct.PluginTokenResponse{
+				ErrDefine: snsglobal.SErrConfig.GetError(snsglobal.CErrPluginToken, "not_found_plugin"),
+			}
+			return
+		}
+
+		token := snscommon.CreateRandomString(512)
+		existPlugin.PluginToken = token
+		err = models.Update(&existPlugin)
+		if err == nil {
+			break
+		} else {
+			continue
+		}
+	}
 	return
 }

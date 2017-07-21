@@ -1,12 +1,16 @@
 package web
 
 import (
-	"github.com/astaxie/beego"
+	"encoding/json"
+	"io/ioutil"
 	"sns/common/snsglobal"
 	"sns/common/snsstruct"
 	"sns/controllers/snscommon"
 	"sns/controllers/snsplugin"
-	"strings"
+	"sns/models"
+
+	"github.com/astaxie/beego"
+	// "strings"
 )
 
 type SnsPluginController struct {
@@ -17,22 +21,43 @@ func (this *SnsPluginController) PluginToEpMessage() {
 	pluginToEpMessage, err := snsplugin.ParseFromPluginMessage(string(this.Ctx.Input.RequestBody))
 	var res snsstruct.ServiceMessageResponse
 	if err != nil {
-		res = snsstruct.ServiceMessageResponse{ErrCode: 1010, ErrMessage: "message formatter is incorrect", Collect: string(this.Ctx.Input.RequestBody)}
+		res = snsstruct.ServiceMessageResponse{ErrDefine: snsglobal.SErrConfig.GetError(snsglobal.CErrCommon, "message_format_err"), Context: string(this.Ctx.Input.RequestBody)}
 	} else {
-		res = snscommon.DispatchMessageToEP(msg, token)
+		token, err2 := snscommon.GetBearerFromRequest(this.Ctx.Request)
+		if err2 != nil {
+			res = snsstruct.ServiceMessageResponse{ErrDefine: snsglobal.SErrConfig.GetError(snsglobal.CErrCommon, "message_format_err"), Context: string(this.Ctx.Input.RequestBody)}
+		}
+		res = snscommon.DispatchMessageToEP(pluginToEpMessage, token)
 	}
 	this.Data["json"] = &res
 	this.ServeJSON()
 }
+
 func (this *SnsPluginController) RegisterPluginAccount() {
 
 }
+
 func (this *SnsPluginController) LoginPluginAccount() {
 
 }
+
 func (this *SnsPluginController) AddAndEditPlugin() {
 
 }
-func (this *SnsPluginController) RequestPluginToken() {
 
+func (this *SnsPluginController) RequestPluginToken() {
+	body, _ := ioutil.ReadAll(this.Ctx.Request.Body)
+	var plugin models.SnsPlugin
+	err := json.Unmarshal([]byte(body), &plugin)
+	//	---------------------check message format
+	var res snsstruct.PluginTokenResponse
+	if err != nil {
+		res = snsstruct.PluginTokenResponse{
+			ErrDefine: snsglobal.SErrConfig.GetError(snsglobal.CErrCommon, "message_format_err"),
+		}
+	} else {
+		res = snsplugin.RequestPluginToken(plugin)
+	}
+	this.Data["json"] = res
+	this.ServeJSON()
 }

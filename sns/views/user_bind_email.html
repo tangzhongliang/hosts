@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+	<div class="container">
+		<h1>My First Bootstrap Page</h1>
+		<div id="form">
+			<div class="dropdown">
+				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Slack
+					<span class="caret"></span></button>
+					<ul class="dropdown-menu">
+						<li class="type_item"><a href="#">Slack</a></li>
+						<li class="type_item"><a href="#">Line</a></li>
+						<li class="type_item"><a href="#">Teams</a></li>
+					</ul>
+				</div>
+			<div class="form-group">
+				<label for="usr">Email:</label>
+				<input type="text" class="form-control" id="email">
+			</div>
+
+			<div class="form-group">
+				<label for="pwd">Account:</label>
+				<input type="text" class="form-control" id="account">
+			</div>
+			<button type="button" class="btn btn-primary" id="submit">submit</button>
+		</div>
+	</div>
+
+</body>
+
+<script type="text/javascript">
+	var accountType = "slack"
+	$('#submit').click(function() {
+		/* Act on the event */
+		email = $('#email').val()
+		account = $('#account').val()
+		$.ajax({
+			url: '/api/ep/url/check/get',
+			type: 'POST',
+			contentType:"application/json; charset=utf-8",	
+			dataType: 'json',
+			data: JSON.stringify({'email': email,
+				'account':account,
+				'account_type':accountType
+			}),
+		})
+		.done(function(data) {
+			console.log("success"+data);
+			data = JSON.parse(data)
+			window.location.replace(data.url)
+		})
+		.fail(function() {
+			alert("error");
+		})
+		.always(function() {
+			console.log("complete");
+		});
+
+	});
+  	$('.dropdown .dropdown-menu li').click(function() {
+  		/* Act on the event */
+  		accountType = $(this).find('a').text();
+  		$(this).parent().parent().find('.dropdown-toggle').text(accountType)
+  		// this.parent('.dropdown-toggle').val(accountType)
+  	});
+  </script>
+</html>

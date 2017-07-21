@@ -2,11 +2,11 @@ package web
 
 import (
 	"github.com/astaxie/beego"
-	"sns/common/snsglobal"
-	"sns/common/snsstruct"
-	"sns/controllers/snscommon"
-	"sns/controllers/snsplugin"
-	"strings"
+	// "sns/common/snsglobal"
+	// "sns/common/snsstruct"
+	// "sns/controllers/snscommon"
+	// "sns/controllers/snsplugin"
+	// "strings"
 )
 
 type SnsEpPluginController struct {

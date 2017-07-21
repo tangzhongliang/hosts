@@ -72,12 +72,13 @@ type EpToPluginMessage struct {
 	Message  EpToPluginMessageData
 }
 type ServiceMessageResponse struct {
-	Ok         bool   `json:"ok"`
-	ErrCode    int    `json:"err_code"`
-	ErrMessage string `json:"err_message"`
-	Collect    struct {
-		context                string
-		EpAccountAffectedCount int
-	} `json:"Collect"`
-	SnsEpMessageResponse SnsEpMessageResponse
+	ErrDefine
+	Ok                  bool   `json:"ok"`
+	Context             string `json:"context"`
+	PluginSendMessageId int
+}
+
+type PluginTokenResponse struct {
+	ErrDefine
+	AccessToken string
 }
