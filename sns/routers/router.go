@@ -11,11 +11,7 @@ func init() {
 	beego.Router("/", &web.MainController{})
 	nsWebhook := beego.NewNamespace("/webhook",
 		beego.NSCond(func(ctx *context.Context) bool {
-			//		enable domain check
-			//		if ctx.Input.Domain() == "api.beego.me" {
-			//			return true
-			//		}
-			return true
+			return CheckUrlRequest(ctx)
 		}),
 		beego.NSRouter("/plugin-list", &web.MainController{}, "get:Get"),
 		beego.NSRouter("/epuser/plugin-list", &web.MainController{}, "get:Get"),
@@ -31,26 +27,35 @@ func init() {
 		beego.NSRouter("/ep/notify/ep_line", &web.SnsEpController{}, "post:Notify"),
 		beego.NSRouter("/ep/notify/ep_slack", &web.SnsEpController{}, "post:Notify"),
 		beego.NSRouter("/ep/notify/ep_office", &web.SnsEpController{}, "post:Notify"),
+		beego.NSRouter("/ep/email/active/:activeid([\\w-]+)", &web.SnsEpController{}, "post:Active"),
 	)
 
 	nsPage := beego.NewNamespace("/pages", beego.NSCond(func(ctx *context.Context) bool {
-		//		enable domain check
-		//		if ctx.Input.Domain() == "api.beego.me" {
-		//			return true
-		//		}
-		return true
+		return CheckUrlRequest(ctx)
 	}),
 		beego.NSRouter("/user/bindemail", &web.PageController{}, "get:UserBindEmail"),
 	)
+
 	nsApi := beego.NewNamespace("/api", beego.NSCond(func(ctx *context.Context) bool {
-		//		enable domain check
-		//		if ctx.Input.Domain() == "api.beego.me" {
-		//			return true
-		//		}
-		return true
+		return CheckUrlRequest(ctx)
 	}),
 		beego.NSRouter("/plugin/get_token", &web.SnsPluginController{}, "get:RequestPluginToken"),
 		beego.NSRouter("/ep/url/check/get", &web.SnsEpController{}, "post:GetEpCheckUrl"),
 	)
-	beego.AddNamespace(nsWebhook, nsPage, nsApi)
+
+	nsFile := beego.NewNamespace("/file", beego.NSCond(func(ctx *context.Context) bool {
+		return CheckUrlRequest(ctx)
+	}),
+		beego.NSRouter("/download/:file([\\w-_.]+)", &web.FileController{}, "get:Download"),
+		beego.NSRouter("/upload", &web.FileController{}, "post:Upload"),
+	)
+
+	beego.AddNamespace(nsWebhook, nsPage, nsApi, nsFile)
+}
+func CheckUrlRequest(ctx *context.Context) bool {
+	//		enable domain check
+	//		if ctx.Input.Domain() == "api.beego.me" {
+	//			return true
+	//		}
+	return true
 }

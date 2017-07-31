@@ -3,9 +3,10 @@ package snsplugin
 import (
 	"encoding/json"
 	"errors"
+	"sns/common"
 	"sns/common/snsglobal"
 	"sns/common/snsstruct"
-	"sns/controllers/snscommon"
+	// "sns/controllers/snscommon"
 	"sns/models"
 	"sns/util/snserror"
 	"strings"
@@ -51,11 +52,12 @@ func ParseFromPluginMessage(str string) (msg snsstruct.PluginToEpMessage, err er
 	return
 }
 
-func ParseToPluginMessage(str string) (msg snsstruct.EpToPluginMessage, err error) {
-	err = json.Unmarshal([]byte(str), &msg)
-	snserror.LogAndPanic(err)
+func ParseToPluginMessage(input snsstruct.EpToPluginMessage) (msg snsstruct.EpToPluginMessage, err error) {
+	// err = json.Unmarshal([]byte(str), &msg)
+	// snserror.LogAndPanic(err)
 
 	// -----------------------------recover plugin id and callbackid
+	msg = input
 	value := msg.Message.SnsEpResponse.CallbackId
 	splits := strings.SplitN(value, "_", 2)
 	if len(splits) != 2 {
@@ -86,7 +88,7 @@ func RequestPluginToken(plugin models.SnsPlugin) (res snsstruct.PluginTokenRespo
 			return
 		}
 
-		token := snscommon.CreateRandomString(512)
+		token := common.CreateRandomString(512)
 		existPlugin.PluginToken = token
 		err = models.Update(&existPlugin)
 		if err == nil {

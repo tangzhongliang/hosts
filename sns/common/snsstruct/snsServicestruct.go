@@ -43,6 +43,7 @@ type SelectedOption4Btn struct {
 type PluginToEpMessageData struct {
 	Text        string
 	Link        string
+	File        string
 	IsToAll     bool
 	Attachments []*Attachment
 }

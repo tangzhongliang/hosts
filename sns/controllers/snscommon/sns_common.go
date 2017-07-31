@@ -3,6 +3,7 @@ package snscommon
 import (
 	"encoding/json"
 	"io/ioutil"
+	"sns/common"
 	"sns/common/snsstruct"
 	"sns/controllers/snsep"
 	// "sns/controllers/snsplugin"
@@ -54,7 +55,7 @@ func SendMessageToPluginByPost(url string, msg snsstruct.EpToPluginMessage) (err
 func SendMessageToEp(accounts []models.SnsEpAccount) (sendMessageId string) {
 	snslog.If("SendMessageToEp/ send to %d;%+v", len(accounts), accounts)
 	res := ExecUntilSuccess(func() (key interface{}, ok bool) {
-		key = CreateRandomString(20)
+		key = common.CreateRandomString(20)
 		err := models.Insert(&models.PluginSendMessageState{SendMessageId: key.(string)})
 		ok = err == nil
 		return

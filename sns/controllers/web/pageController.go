@@ -13,5 +13,10 @@ type PageController struct {
 }
 
 func (this *PageController) UserBindEmail() {
+	this.Data["accountType"] = this.GetString("accountType", "ep_line")
+	this.Data["accountTypeText"] = "line"
+	this.Data["userId"] = this.GetString("userId", "xxx@line.com")
+	this.GetSession("bindAccountType")
+	this.GetSession("bindAccountType")
 	this.TplName = "user_bind_email.html"
 }

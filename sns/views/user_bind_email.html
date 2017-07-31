@@ -16,31 +16,35 @@
 		<h1>My First Bootstrap Page</h1>
 		<div id="form">
 			<div class="dropdown">
-				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Slack
+				<button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{.accountTypeText}}
 					<span class="caret"></span></button>
 					<ul class="dropdown-menu">
-						<li class="type_item"><a href="#">Slack</a></li>
-						<li class="type_item"><a href="#">Line</a></li>
-						<li class="type_item"><a href="#">Teams</a></li>
+						<li class="type_item"><a href="#" value="ep_slack">Slack</a></li>
+						<li class="type_item"><a href="#" value="ep_line">Line</a></li>
+						<li class="type_item"><a href="#" value="ep_team">Teams</a></li>
 					</ul>
 				</div>
-			<div class="form-group">
+			<div class="form-group"  id="emailContent">
 				<label for="usr">Email:</label>
-				<input type="text" class="form-control" id="email">
+				<input type="text" class="form-control" id="email" >
 			</div>
 
-			<div class="form-group">
+			<div class="form-group" id="emailContent" style="display:none">
 				<label for="pwd">Account:</label>
-				<input type="text" class="form-control" id="account">
+				<input type="text" class="form-control" id="account" readonly="readonly" value="{{.userId}}"/>
+			</div>
+			<div class="form-group" id="lineAuth" style="display:none">
+				<img src="/static/img/lineauth.png">
 			</div>
 			<button type="button" class="btn btn-primary" id="submit">submit</button>
 		</div>
 	</div>
 
 </body>
-
+<script src="/static/js/custom/common.js"></script>
 <script type="text/javascript">
-	var accountType = "slack"
+	var accountType = "ep_slack"
+	var userId = {{.userId}}
 	$('#submit').click(function() {
 		/* Act on the event */
 		email = $('#email').val()
@@ -68,11 +72,55 @@
 		});
 
 	});
-  	$('.dropdown .dropdown-menu li').click(function() {
+	$('.dropdown .dropdown-menu li').click(function() {
   		/* Act on the event */
-  		accountType = $(this).find('a').text();
-  		$(this).parent().parent().find('.dropdown-toggle').text(accountType)
+  		accountType = $(this).find('a').attr("value");
+  		accountTypeText = $(this).find('a').text();
+  		$(this).parent().parent().find('.dropdown-toggle').text(accountTypeText);
   		// this.parent('.dropdown-toggle').val(accountType)
+  		console.info(accountType);
+  		if (accountType=="ep_line"){
+  			if (userId == ""){
+  				$('#userContent').css("display","none");
+  				$('#lineAuth').css("display","block");
+  				$('#submit').css("display","none");
+  			}else{
+  				$('#userContent').css("display","block");
+  				$('#lineAuth').css("display","none");
+  				$('#submit').css("display","block");
+  			}
+  		}else{
+  			userId = "";
+  			$('#userContent').css("display","none");
+  			$('#lineAuth').css("display","none");
+  			$('#submit').css("display","block");
+  		}
   	});
+
+  	function init(){
+  		accountType = {{.accountType}};
+  		$(this).parent().parent().find('.dropdown-toggle').text({{.accountTypeText}});
+  		console.info(accountType);
+  		if (accountType=="ep_line"){
+  			if (userId == ""){
+  				$('#userContent').css("display","none");
+  				$('#lineAuth').css("display","block");
+  				$('#submit').css("display","none");
+  				$('#emailContent').css("display","none");
+  			}else{
+  				$('#emailContent').css("display","block");
+  				$('#userContent').css("display","block");
+  				$('#lineAuth').css("display","none");
+  				$('#submit').css("display","block");
+  			}
+  		}else{
+  			$('#emailContent').css("display","block");
+  			$('#userContent').css("display","none");
+  			$('#lineAuth').css("display","none");
+  			$('#submit').css("display","block");
+  		}
+  	}
+  	init();
   </script>
+   
 </html>
