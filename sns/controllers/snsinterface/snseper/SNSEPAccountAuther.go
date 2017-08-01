@@ -14,9 +14,6 @@ type SNSEPAccounAuther interface {
 	GetSnsCheckLoginUrl(emailEncode string) string
 	SnsCheckLoginResponse(controller *beego.Controller) (models.SnsEpAccount, bool)
 
-	GetAuthUrl() string
-	SnsCheckAuthResponse(controller *beego.Controller) (models.SnsEpAccount, bool)
-
 	ParseMessageFromWebhook(controller *beego.Controller) snsstruct.EpToPluginMessage
 	ParseMessageFromJson(postJson string) snsstruct.EpToPluginMessage
 

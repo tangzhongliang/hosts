@@ -9,7 +9,7 @@ import (
 	"sns/util/snslog"
 )
 
-func SendActiveEmail(snsEpAccountEmail models.SnsEpAccountEmail) {
+func SendActiveEmail(emailAccount models.EmailAccount) {
 	snsglobal.SEmailAuthIdSyncMap.Lock.Lock()
 	res := ExecUntilSuccess(func() (res interface{}, ok bool) {
 		res = common.CreateRandomString(20)
@@ -17,12 +17,12 @@ func SendActiveEmail(snsEpAccountEmail models.SnsEpAccountEmail) {
 		ok = !ok
 		return
 	})
-	snsglobal.SEmailAuthIdSyncMap.Set(res.(string), snsEpAccountEmail)
+	snsglobal.SEmailAuthIdSyncMap.Set(res.(string), emailAccount)
 	snsglobal.SEmailAuthIdSyncMap.Lock.Unlock()
 
 	//	------------------------send active url to email
-	url := "http://localhost:8080/ep/email/active/" + res.(string)
-	SendContentToEmail(url, snsEpAccountEmail.Email)
+	url := "http://localhost:8080/user/active/" + res.(string)
+	SendContentToEmail(url, emailAccount.Email)
 }
 
 func SendContentToEmail(content, email string) {

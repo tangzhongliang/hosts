@@ -27,13 +27,18 @@ func init() {
 		beego.NSRouter("/ep/notify/ep_line", &web.SnsEpController{}, "post:Notify"),
 		beego.NSRouter("/ep/notify/ep_slack", &web.SnsEpController{}, "post:Notify"),
 		beego.NSRouter("/ep/notify/ep_office", &web.SnsEpController{}, "post:Notify"),
-		beego.NSRouter("/ep/email/active/:activeid([\\w-]+)", &web.SnsEpController{}, "post:Active"),
 	)
 
-	nsPage := beego.NewNamespace("/pages", beego.NSCond(func(ctx *context.Context) bool {
+	nsPage := beego.NewNamespace("/user", beego.NSCond(func(ctx *context.Context) bool {
 		return CheckUrlRequest(ctx)
 	}),
-		beego.NSRouter("/user/bindemail", &web.PageController{}, "get:UserBindEmail"),
+		beego.NSRouter("/ep/add", &web.UserPageController{}, "get:UserBindEmail"),
+		beego.NSRouter("/active/:activeid([\\w-]+)", &web.UserManagerController{}, "get:UserActive"),
+		beego.NSRouter("/login", &web.UserManagerController{}, "post:UserLogin"),
+		beego.NSRouter("/login", &web.UserPageController{}, "get:UserLoginPage"),
+		beego.NSRouter("/register", &web.UserManagerController{}, "post:UserRegister"),
+
+		beego.NSRouter("/", &web.UserPageController{}, "get:UserPage"),
 	)
 
 	nsApi := beego.NewNamespace("/api", beego.NSCond(func(ctx *context.Context) bool {

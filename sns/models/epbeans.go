@@ -10,6 +10,12 @@ type SnsEpAccount struct {
 	EPType       string `gorm:"primary_key"`
 	AccountType  string `gorm:"not null"`
 	ForeverToken string `gorm:"type:varchar(2000)"` //check is granted account which is granted
+	Status       int
+}
+
+type EmailAccount struct {
+	Email    string `gorm:"primary_key"`
+	Password string `gorm:"not null"`
 }
 
 type SnsEpAccountEmail struct {

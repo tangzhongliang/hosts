@@ -10,6 +10,8 @@ import (
 )
 
 func main() {
+
+	beego.BConfig.WebConfig.Session.SessionOn = true
 	InitDbData()
 	beego.Run()
 }
@@ -42,4 +44,7 @@ func InitDbData() {
 	snsPluginEpAccount := models.SnsPluginEpAccount{PluginId: "bbbplugin1", EpAccountId: "snstest111", EpAccountType: "slack"}
 	err = models.InsertOrUpdate(&snsPluginEpAccount)
 	snserror.LogAndPanic(err)
+
+	emailAccount := models.EmailAccount{Email: "tangzhongliang@rst.ricoh.com", Password: "123"}
+	models.InsertOrUpdate(&emailAccount)
 }

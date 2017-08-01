@@ -83,3 +83,7 @@ type PluginTokenResponse struct {
 	ErrDefine
 	AccessToken string
 }
+
+type WebResponse struct {
+	Ok bool
+}

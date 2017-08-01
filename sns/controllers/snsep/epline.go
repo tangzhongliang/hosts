@@ -1,27 +1,71 @@
 package snsep
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 
-	"persian/cloud/models"
-	"persian/cloud/util/pConst"
-	"persian/cloud/util/pFunction"
-	"persian/cloud/util/pGlobal"
-	"persian/cloud/util/pLog"
-	"persian/cloud/util/pStruct"
+	"sns/models"
 	"strconv"
-
-	"sync"
 
 	"github.com/astaxie/beego"
 	"github.com/beego/i18n"
 	"github.com/line/line-bot-sdk-go/linebot"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"sns/common/snsstruct"
+	"sns/util/snslog"
+	"strings"
+	"sync"
 )
 
 var bot *linebot.Client
 
 type Line struct {
+}
+
+func GetSnsCheckLoginUrl(emailEncode string) string {
+	return "https://access.line.me/dialog/oauth/weblogin?response_type=code&client_id=1527826496&redirect_uri=https://rocket.hezhensh.com:12443/webhook/ep/login/ep_line&state=1234"
+}
+
+func SnsCheckLoginResponse(controller *beego.Controller) (models.SnsEpAccount, bool) {
+	var snsEpAccount models.SnsEpAccount
+	code := controller.GetString("code")
+	if len(code) == 0 {
+		snslog.E("SnsCheckLoginResponse", controller.Ctx.Request.RequestURI)
+		return snsEpAccount, false
+	}
+	//		------------------------------
+	form := url.Values{}
+	form.Add("grant_type", "authorization_code")
+	form.Add("client_id", "1527826496")
+	form.Add("client_secret", "1366ac6c8729f589a8e49412a9f253e2")
+	form.Add("code", code)
+	form.Add("redirect_uri", "https://rocket.hezhensh.com:12443/webhook/ep/login/ep_line")
+	req, _ := http.NewRequest("POST", "https://api.line.me/v2/oauth/accessToken", strings.NewReader(form.Encode()))
+	res, _ := http.DefaultClient.Do(req)
+	body, _ := ioutil.ReadAll(res.Body)
+	var lineAccessTokenResponse snsstruct.LineAccessTokenResponse
+	json.Unmarshal(body, &lineAccessTokenResponse)
+
+	//		------------------------------
+	req, _ = http.NewRequest("GET", "https://api.line.me/v2/profile", nil)
+	req.Header.Add("Authorization", "Bearer "+lineAccessTokenResponse.AccessToken)
+	res, _ = http.DefaultClient.Do(req)
+	body, _ = ioutil.ReadAll(res.Body)
+	var lineProfile snsstruct.LineProfile
+	json.Unmarshal(body, &lineProfile)
+	snsEpAccount.AccountId = lineProfile.UserID
+	snsEpAccount.AccountType = "line"
+	return snsEpAccount, true
+}
+
+func ParseMessageFromWebhook(controller *beego.Controller) snsstruct.EpToPluginMessage {
+	return snsstruct.EpToPluginMessage{}
+}
+func ParseMessageFromJson(postJson string) snsstruct.EpToPluginMessage {
+	return snsstruct.EpToPluginMessage{}
 }
 
 //var AutoLine Line
@@ -216,11 +260,11 @@ func RandInt(min, max int) int {
 	return rand.Intn(max-min) + min
 }
 
-func (this Line) LineMessageButtonCallback(c beego.Controller) {
+func (this Line) ParseMessageFromWebhook(controller *beego.Controller) snsstruct.EpToPluginMessage {
 	// get Post callback data
 	fmt.Println("LineMessageButtonCallback")
 	bot, err := GetLineBotInstance()
-	events, err := bot.ParseRequest(c.Ctx.Request)
+	events, err := bot.ParseRequest(controller.Ctx.Request)
 	if err != nil {
 		pLog.Ef("LineMessageButtonCallback ParseRequest err: %v ", err)
 		if err == linebot.ErrInvalidSignature {
@@ -232,6 +276,36 @@ func (this Line) LineMessageButtonCallback(c beego.Controller) {
 	}
 	c.Ctx.ResponseWriter.WriteHeader(200)
 	fmt.Printf("events%s\n", events)
+	for _, event := range events {
+		if event.Source.UserID == "" &&
+			event.Source.GroupID == "" &&
+			event.Source.RoomID == "" {
+			snslog.If("UserId or GroupId is empty")
+			continue
+		} else {
+			snslog.If("find userId:", event.Source.UserID, "groupID:", event.Source.GroupID, "RoomID:", event.Source.RoomID)
+		}
+		if event.Type == linebot.EventTypeFollow { //FollowEvent（Botが友達追加された）
+			var tmp []models.SnsEpAccount
+			var user = models.SnsEpAccount{AccountId: event.Source.UserID, AccountType: "line"}
+			models.QueryByKey(&tmp, &user)
+
+			if len(tmp) != 0 {
+				user = tmp[0]
+			}
+			user.Status = 1
+			models.InsertOrUpdate(&user)
+			snslog.I("linebot.EventTypeFollow insertorupdate", user)
+		} else if event.Type == linebot.EventTypeMessage { //Message Event
+			switch message := event.message.(type) {
+			case *linebot.textmessage:
+				snslog.I("linebot.EventTypeMessage", linebot.TextMessage)
+			}
+		} else {
+
+		}
+
+	}
 	// for _, event := range events {
 	// 	if event.Source.UserID == "" &&
 	// 		event.Source.GroupID == "" &&
