@@ -6,8 +6,8 @@ import (
 
 type SnsEPMessageSender interface {
 	//send message struct json
-	SendAttachmentByChannel(token string, msg snsstruct.PluginToEpMessage)
-	SendAttachmentByUser(token string, msg snsstruct.PluginToEpMessage)
+	// SendAttachmentByChannel(token string, userId string, msg snsstruct.PluginToEpMessageData)
+	SendAttachmentByUser(token string, userId string, msg snsstruct.PluginToEpMessageData)
 
 	//send file only
 	//	SendFileByChannel(token, message, url, channelId string)

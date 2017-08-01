@@ -15,8 +15,8 @@
   <p>The form below contains two input elements; one of type text and one of type password:</p>
   <form>
     <div class="form-group">
-      <label for="usr">Email:</label>
-      <input type="email" class="form-control" id="email">
+      <label for="email">Email:</label>
+      <input type="text" class="form-control" id="email">
     </div>
     <div class="form-group">
       <label for="pwd">Password:</label>
@@ -31,8 +31,8 @@
 <script type="text/javascript">
   $('#submit').click(function(event) {
     /* Act on the event */
-    emailAccount = $('email').text()
-    password = $('pwd').text()
+    emailAccount = $('#email').val()
+    password = $('#pwd').val()
     var valid = checkInput(emailAccount,password);
     if (valid==true){
       AjaxPost('/user/login'

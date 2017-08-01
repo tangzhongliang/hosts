@@ -19,9 +19,9 @@ func init() {
 		beego.NSRouter("/ep/login/ep_line", &web.SnsEpController{}, "get:Login"),
 		beego.NSRouter("/ep/login/ep_slack", &web.SnsEpController{}, "get:Login"),
 		beego.NSRouter("/ep/login/ep_office", &web.SnsEpController{}, "get:Login"),
-		beego.NSRouter("/ep/auth/ep_line", &web.SnsEpController{}, "get:Auth"),
-		beego.NSRouter("/ep/auth/ep_slack", &web.SnsEpController{}, "get:Auth"),
-		beego.NSRouter("/ep/auth/ep_office", &web.SnsEpController{}, "get:Auth"),
+		// beego.NSRouter("/ep/auth/ep_line", &web.SnsEpController{}, "get:Auth"),
+		// beego.NSRouter("/ep/auth/ep_slack", &web.SnsEpController{}, "get:Auth"),
+		// beego.NSRouter("/ep/auth/ep_office", &web.SnsEpController{}, "get:Auth"),
 
 		// -----------------------sns ep webhook
 		beego.NSRouter("/ep/notify/ep_line", &web.SnsEpController{}, "post:Notify"),

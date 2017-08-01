@@ -39,11 +39,11 @@ func (this *SnsEpController) Login() {
 	}
 }
 
-func (this *SnsEpController) Auth() {
-	snstype := GetLastString(this.Ctx.Request.RequestURI)
-	snsEpAuther := snsglobal.SBeanFactory.New(snstype).(snseper.SNSEPAccounAuther)
-	snsEpAuther.SnsCheckAuthResponse(&this.Controller)
-}
+// func (this *SnsEpController) Auth() {
+// 	snstype := GetLastString(this.Ctx.Request.RequestURI)
+// 	snsEpAuther := snsglobal.SBeanFactory.New(snstype).(snseper.SNSEPAccounAuther)
+// 	snsEpAuther.SnsCheckAuthResponse(&this.Controller)
+// }
 
 func (this *SnsEpController) Notify() {
 	snstype := GetLastString(this.Ctx.Request.RequestURI)

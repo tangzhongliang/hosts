@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"github.com/astaxie/beego"
 	"io/ioutil"
 	"sns/common/snsglobal"
 	"sns/common/snsstruct"
@@ -11,7 +12,7 @@ import (
 )
 
 type UserManagerController struct {
-	BaseController
+	beego.Controller
 }
 
 func (this *UserManagerController) UserLogin() {
@@ -23,8 +24,11 @@ func (this *UserManagerController) UserLogin() {
 	if err != nil {
 		panic(err)
 	}
-	snslog.Df("%s", emailAccounts)
+	snslog.Df("%s", string(body))
 	if len(emailAccounts) == 1 {
+		this.SetSession("emailAccount", emailAccount.Email)
+		this.SetSession("emailAccount", emailAccount.Email)
+		this.SetSession("emailAccount", emailAccount.Email)
 		this.SetSession("emailAccount", emailAccount.Email)
 		snslog.D("session", this.GetSession("emailAccount"))
 		this.Data["json"] = snsstruct.WebResponse{Ok: true}

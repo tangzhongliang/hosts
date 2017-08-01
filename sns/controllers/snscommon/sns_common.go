@@ -6,9 +6,11 @@ import (
 	"sns/common"
 	"sns/common/snsstruct"
 	"sns/controllers/snsep"
+	"sns/controllers/snsinterface/snseper"
 	// "sns/controllers/snsplugin"
 	"bytes"
 	"net/http"
+	"sns/common/snsglobal"
 	"sns/models"
 	"sns/util/snserror"
 	"sns/util/snslog"
@@ -52,7 +54,7 @@ func SendMessageToPluginByPost(url string, msg snsstruct.EpToPluginMessage) (err
 	return
 }
 
-func SendMessageToEp(accounts []models.SnsEpAccount) (sendMessageId string) {
+func SendMessageToEp(accounts []models.SnsEpAccount, msg snsstruct.PluginToEpMessage) (sendMessageId string) {
 	snslog.If("SendMessageToEp/ send to %d;%+v", len(accounts), accounts)
 	res := ExecUntilSuccess(func() (key interface{}, ok bool) {
 		key = common.CreateRandomString(20)
@@ -61,6 +63,10 @@ func SendMessageToEp(accounts []models.SnsEpAccount) (sendMessageId string) {
 		return
 	})
 	sendMessageId = res.(string)
+	for _, account := range accounts {
+		sender := snsglobal.SBeanFactory.New("ep_" + account.AccountType).(snseper.SnsEPMessageSender)
+		sender.SendAttachmentByUser(account.ForeverToken, account.AccountId, msg.Message)
+	}
 	return
 }
 
@@ -96,7 +102,7 @@ func DispatchMessageToEP(msg snsstruct.PluginToEpMessage, token string) (ret sns
 		accounts = snsep.GetSnsEpByPluginId(msg.PluginId)
 		snslog.I("DispatchMessageToEP/ IsToAll false all users", accounts)
 	}
-	SendMessageToEp(accounts)
+	SendMessageToEp(accounts, msg)
 	if len(accounts) == 0 {
 		return CreateServiceMessageResponse(1000, "accounts null")
 	}
